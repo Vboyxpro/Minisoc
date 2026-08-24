@@ -13,21 +13,5 @@
   "background_color": "#ffffff",
   "theme_color": "#007bff",
   "display": "standalone",
-  "orientation": "portrait",
-  "screenshots": [
-    {
-      "src": "screenshot-mobile.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Minisoc Mobil Nézet"
-    },
-    {
-      "src": "screenshot-desktop.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Minisoc Asztali Nézet"
-    }
-  ]
+  "orientation": "portrait"
 }
