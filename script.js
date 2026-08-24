@@ -1,4 +1,4 @@
-const SUPABASE_URL = "https://sftfopnzbjfftcntoxkf.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://sftfopnzbjfftcntoxkf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_aFFtz1WWywHOqwO0pw9I8w_KY5PtTvE";
 
 // Hagyományos hálózati kliens trükkös karakterek nélkül
