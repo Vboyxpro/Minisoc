@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Közösségi Oldal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Auth Szekció -->
+        <div id="auth-container" class="card">
+            <h2 id="auth-title">Bejelentkezés</h2>
+            <form id="auth-form">
+                <input type="text" id="username" placeholder="Felhasználónév" required>
+                <input type="password" id="password" placeholder="Jelszó" required>
+                <button type="submit" id="auth-btn">Belépés</button>
+            </form>
+            <p id="toggle-auth">Nincs még fiókod? <span id="toggle-link">Regisztráció</span></p>
+        </div>
+
+        <!-- Főoldal Szekció -->
+        <div id="main-container" class="hidden">
+            <header class="main-header">
+                <h2>Üdv, <span id="user-display"></span>!</h2>
+                <button id="logout-btn" class="danger-btn">Kijelentkezés</button>
+            </header>
+
+            <div class="card new-post-card">
+                <textarea id="post-content" placeholder="Mi jár a fejedben?" required></textarea>
+                <button id="submit-post-btn">Megosztás</button>
+            </div>
+
+            <div id="feed"></div>
+        </div>
+    </div>
+    <!-- Figyelem: Itt most már nem hivatkozunk külső cdn linkre! -->
+    <script src="script.js"></script>
+</body>
+</html>
