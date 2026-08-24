@@ -1,5 +1,6 @@
 const SUPABASE_URL = "https://sftfopnzbjfftcntoxkf.supabase.co"; 
 const SUPABASE_KEY = "sb_publishable_aFFtz1WWywHOqwO0pw9I8w_KY5PtTvE";
+
 const supabase = {
     async request(endpoint, method, options) {
         var url = SUPABASE_URL + "/rest/v1/" + endpoint;
@@ -237,7 +238,6 @@ async function loadPosts() {
                 var postDiv = document.createElement("div");
                 postDiv.className = "post";
                 
-                // JAVÍTVA: A sor végén a '/div>' át lett írva a helyes '</div>'-re!
                 postDiv.innerHTML = 
                     '<div class="post-header">' +
                         '<span class="post-user">@' + post.username + '</span>' +
@@ -251,5 +251,5 @@ async function loadPosts() {
                         '<div class="comment-input-container">' +
                             '<input type="text" id="comment-in-' + post.id + '" placeholder="Hozzászólás írása...">' +
                             '<button onclick="addComment(' + post.id + ')">Küldés</button>' +
-'' +'' +'';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések.";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function loadComments(postId) {var listContainer = document.getElementById("comments-list-" + postId);if (!listContainer) return;try {var res = await supabase.from('comments').select('*');listContainer.innerHTML = "";if (res.data && res.data.length > 0) {for (var i = 0; i < res.data.length; i++) {var c = res.data[i];if (Number(c.post_id) === Number(postId)) {var cDiv = document.createElement("div");cDiv.className = "comment";cDiv.innerHTML = '@' + c.username + ':' + c.content;listContainer.appendChild(cDiv);}}}} catch (e) {console.log("Komment hiba");}}async function addComment(postId) {var input = document.getElementById("comment-in-" + postId);if (!input || !input.value.trim()) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: input.value.trim() }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a hozzászólás küldésekor.");}}
-init();
+                        '</div>' +
+'' +'';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések.";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function loadComments(postId) {var listContainer = document.getElementById("comments-list-" + postId);if (!listContainer) return;try {var res = await supabase.from('comments').select('*');listContainer.innerHTML = "";if (res.data && res.data.length > 0) {for (var i = 0; i < res.data.length; i++) {var c = res.data[i];if (Number(c.post_id) === Number(postId) || Number(postId) === 1 || c.post_id === null) {var cDiv = document.createElement("div");cDiv.className = "comment";cDiv.innerHTML = '@' + c.username + ':' + c.content;listContainer.appendChild(cDiv);}}}} catch (e) {console.log("Komment hiba");}}async function addComment(postId) {var input = document.getElementById("comment-in-" + postId);if (!input || !input.value.trim()) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: input.value.trim() }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a hozzászólás küldésekor.");}}init();
