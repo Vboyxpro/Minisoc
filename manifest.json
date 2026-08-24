@@ -5,13 +5,7 @@
     {
       "src": "icon.png",
       "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any"
-    },
-    {
-      "src": "icon.png",
-      "type": "image/png",
-      "sizes": "512x512",
+      "sizes": "1254x1254",
       "purpose": "any"
     }
   ],
@@ -19,5 +13,21 @@
   "background_color": "#ffffff",
   "theme_color": "#007bff",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Minisoc Mobil Nézet"
+    },
+    {
+      "src": "screenshot-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Minisoc Asztali Nézet"
+    }
+  ]
 }
