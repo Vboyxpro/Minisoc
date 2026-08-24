@@ -152,6 +152,7 @@ authForm.addEventListener("submit", async function(e) {
 
     try {
         if (isLoginMode) {
+            // BEJELENTKEZÉS
             var res = await supabase.from('users').select('*');
             var user = null;
             if (res.data) {
@@ -172,6 +173,7 @@ authForm.addEventListener("submit", async function(e) {
                 alert("Hibás felhasználónév vagy jelszó!");
             }
         } else {
+            // REGISZTRÁCIÓ
             var resEx = await supabase.from('users').select('*');
             var exists = false;
             if (resEx.data) {
@@ -185,18 +187,31 @@ authForm.addEventListener("submit", async function(e) {
                 return;
             }
 
-            await supabase.from('users').insert([{ username: username, password: password }]);
+            // Itt küldjük el a regisztrációt az adatbázisnak
+            var regRes = await supabase.from('users').insert([{ username: username, password: password }]);
+            
+            // JAVÍTÁS: Nem vizsgáljuk a regRes.data meglétét, mert a sikeres lefutás (error hiánya) elég
+            if (regRes.error) {
+                alert("Hiba történt a regisztráció során: " + regRes.error.message);
+                return;
+            }
+
             alert("Sikeres regisztráció! Most már beléphetsz.");
+            
+            // Automatikusan visszaváltunk login módra, hogy be tudj gépelni az adatokat
             isLoginMode = true;
             authTitle.textContent = "Bejelentkezés";
             authBtn.textContent = "Belépés";
             document.getElementById("toggle-auth").innerHTML = 'Nincs még fiókod? <span id="toggle-link">Regisztráció</span>';
+            authForm.reset(); // Kiürítjük a mezőket a biztonság kedvéért
             setupToggleListener();
         }
     } catch (err) {
-        alert("Adatbázis hiba történt.");
+        alert("Adatbázis hiba történt a művelet során.");
+        console.error(err);
     }
 });
+
 
 logoutBtn.addEventListener("click", function() {
     currentUser = null;
