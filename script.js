@@ -1,8 +1,6 @@
-// IDE ÍRD VISSZA A SAJÁT MASOLT ADATAIDAT!
 const SUPABASE_URL = "https://sftfopnzbjfftcntoxkf.supabase.co"; 
 const SUPABASE_KEY = "sb_publishable_aFFtz1WWywHOqwO0pw9I8w_KY5PtTvE";
 
-// Hagyományos hálózati kliens trükkös karakterek nélkül
 const supabase = {
     async request(endpoint, method, options) {
         var url = SUPABASE_URL + "/rest/v1/" + endpoint;
@@ -240,7 +238,6 @@ async function loadPosts() {
                 var postDiv = document.createElement("div");
                 postDiv.className = "post";
                 
-                // MÓDOSÍTÁS: Kivettük a szívecske gombot, csak a funkcionális elemek maradtak meg
                 postDiv.innerHTML = 
                     '<div class="post-header">' +
                         '<span class="post-user">@' + post.username + '</span>' +
@@ -252,18 +249,7 @@ async function loadPosts() {
                     '</div>' +
                     '<div class="comment-section">' +
                         '<div class="comment-input-container">' +
-'' +'Küldés' +'' +'' +'/div>';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések.";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function loadComments(postId) {var listContainer = document.getElementById("comments-list-" + postId);if (!listContainer) return;try {var res = await supabase.from('comments').select('*', { eq: { post_id: postId } });listContainer.innerHTML = "";if (res.data && res.data.length > 0) {for (var i = 0; i < res.data.length; i++) {var c = res.data[i];var cDiv = document.createElement("div");cDiv.className = "comment";cDiv.innerHTML = '@' + c.username + ':' + c.content;listContainer.appendChild(cDiv);}}} catch (e) {console.log("Komment hiba");}}async function addComment(postId) {var input = document.getElementById("comment-in-" + postId);if (!input || !input.value.trim()) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: input.value.trim() }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a hozzászólás küldésekor.");}}init();*(Ne felejtsd el a zöld **Commit changes** gombot a mentéshez!)*
-
-### 2. A javított `style.css` fájl (Hozzászólás beviteli mező javítása)
-Hogy a komment beviteli mező tökéletesen látszódjon (fehér háttérrel és kerettel), nyisd meg a `style.css`-t is a ceruza ikonnal, görgess le az aljára, és ellenőrizd, hogy a `.comment-input-container input` szabály pontosan így néz-e ki (ha nem, írd át):
-
-```css
-.comment-input-container input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 20px;
-    font-size: 14px;
-    background-color: #ffffff !important; /* Kényszerített fehér háttér */
-    color: #000000 !important;            /* Fekete beírt szöveg */
-}
+                            '<input type="text" id="comment-in-' + post.id + '" placeholder="Hozzászólás írása...">' +
+                            '<button onclick="addComment(' + post.id + ')">Küldés</button>' +
+                        '</div>' +
+'' +'';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések.";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function loadComments(postId) {var listContainer = document.getElementById("comments-list-" + postId);if (!listContainer) return;try {var res = await supabase.from('comments').select('*');listContainer.innerHTML = "";if (res.data && res.data.length > 0) {for (var i = 0; i < res.data.length; i++) {var c = res.data[i];if (Number(c.post_id) === Number(postId)) {var cDiv = document.createElement("div");cDiv.className = "comment";cDiv.innerHTML = '@' + c.username + ':' + c.content;listContainer.appendChild(cDiv);}}}} catch (e) {console.log("Komment hiba");}}async function addComment(postId) {var input = document.getElementById("comment-in-" + postId);if (!input || !input.value.trim()) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: input.value.trim() }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a hozzászólás küldésekor.");}}init();
