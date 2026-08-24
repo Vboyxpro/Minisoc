@@ -11,11 +11,14 @@
         <!-- Auth Szekció -->
         <div id="auth-container" class="card">
             <h2 id="auth-title">Bejelentkezés</h2>
-            <form id="auth-form">
+                        <form id="auth-form">
                 <input type="text" id="username" placeholder="Felhasználónév" required>
                 <input type="password" id="password" placeholder="Jelszó" required>
+                <!-- ÚJ MEZŐ: Ide kell majd beírni a titkos kódot -->
+                <input type="text" id="school-code" placeholder="Iskolai kód (Regisztrációhoz)">
                 <button type="submit" id="auth-btn">Belépés</button>
             </form>
+
             <p id="toggle-auth">Nincs még fiókod? <span id="toggle-link">Regisztráció</span></p>
         </div>
 
