@@ -4,58 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Közösségi Oldal</title>
-      <!-- PWA Manifest összekötés -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#007bff">
+    <!-- PWA Manifest összekötés -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
 
-  <!-- PWA Service Worker regisztráció -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.js')
-          .then(function() { console.log("Minisoc PWA készen áll!"); })
-          .catch(function(err) { console.log("PWA regisztrációs hiba:", err); });
-      });
+    <!-- PWA Funkciók -->
+    <script>
+      // 1. Service Worker regisztráció javítva
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('sw.js')
+            .then(function() { console.log("Minisoc PWA készen áll!"); })
+            .catch(function(err) { console.log("PWA regisztrációs hiba:", err); });
+        }); // <-- Ez a lezárás hiányzott!
+      } // <-- Ez a lezárás is hiányzott!
         
-  // Megvárjuk, amíg a HTML oldal teljesen betöltődik a háttérben
-  document.addEventListener('DOMContentLoaded', () => {
-    
-    let elmentettPrompt;
-    const pwaGomb = document.getElementById('pwa-gomb');
+      // 2. Telepítő gomb kezelése
+      document.addEventListener('DOMContentLoaded', () => {
+        let elmentettPrompt;
+        const pwaGomb = document.getElementById('pwa-gomb');
 
-    // Ellenőrizzük, hogy létezik-e a gomb az oldalon, nehogy hibát dobjon
-    if (!pwaGomb) return;
+        if (!pwaGomb) return;
 
-    // A böngésző jelzi, hogy az app telepíthető
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      elmentettPrompt = e;
-      pwaGomb.style.display = 'block';
-    });
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          elmentettPrompt = e;
+          pwaGomb.style.display = 'block';
+        });
 
-    // Amikor a felhasználó rákattint a gombra
-    pwaGomb.addEventListener('click', async () => {
-      if (elmentettPrompt) {
-        elmentettPrompt.prompt();
-        const { outcome } = await elmentettPrompt.userChoice;
-        console.log(`Felhasználó választása: ${outcome}`);
-        elmentettPrompt = null;
-        pwaGomb.style.display = 'none';
-      }
-    });
+        pwaGomb.addEventListener('click', async () => {
+          if (elmentettPrompt) {
+            elmentettPrompt.prompt();
+            const { outcome } = await elmentettPrompt.userChoice;
+            console.log(`Felhasználó választása: ${outcome}`);
+            elmentettPrompt = null;
+            pwaGomb.style.display = 'none';
+          }
+        });
 
-    // Ha az appot már feltelepítették
-    window.addEventListener('appinstalled', () => {
-      pwaGomb.style.display = 'none';
-      console.log('A Minisoc sikeresen feltelepítve!');
-    });
-
-  });
-
-  </script>
+        window.addEventListener('appinstalled', () => {
+          pwaGomb.style.display = 'none';
+          console.log('A Minisoc sikeresen feltelepítve!');
+        });
+      });
+    </script>
 
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <button id="pwa-gomb" style="display: none; padding: 12px 24px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin: 15px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
   Minisoc Alkalmazás Telepítése
