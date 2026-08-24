@@ -1,4 +1,5 @@
-const SUPABASE_URL = "https://sftfopnzbjfftcntoxkf.supabase.co";
+// IDE ÍRD VISSZA A SAJÁT MASOLT ADATAIDAT!
+const SUPABASE_URL = "https://sftfopnzbjfftcntoxkf.supabase.co"; 
 const SUPABASE_KEY = "sb_publishable_aFFtz1WWywHOqwO0pw9I8w_KY5PtTvE";
 
 // Hagyományos hálózati kliens trükkös karakterek nélkül
@@ -152,7 +153,6 @@ authForm.addEventListener("submit", async function(e) {
 
     try {
         if (isLoginMode) {
-            // BEJELENTKEZÉS
             var res = await supabase.from('users').select('*');
             var user = null;
             if (res.data) {
@@ -173,7 +173,6 @@ authForm.addEventListener("submit", async function(e) {
                 alert("Hibás felhasználónév vagy jelszó!");
             }
         } else {
-            // REGISZTRÁCIÓ
             var resEx = await supabase.from('users').select('*');
             var exists = false;
             if (resEx.data) {
@@ -187,31 +186,24 @@ authForm.addEventListener("submit", async function(e) {
                 return;
             }
 
-            // Itt küldjük el a regisztrációt az adatbázisnak
             var regRes = await supabase.from('users').insert([{ username: username, password: password }]);
-            
-            // JAVÍTÁS: Nem vizsgáljuk a regRes.data meglétét, mert a sikeres lefutás (error hiánya) elég
             if (regRes.error) {
-                alert("Hiba történt a regisztráció során: " + regRes.error.message);
+                alert("Hiba történt a regisztráció során.");
                 return;
             }
 
             alert("Sikeres regisztráció! Most már beléphetsz.");
-            
-            // Automatikusan visszaváltunk login módra, hogy be tudj gépelni az adatokat
             isLoginMode = true;
             authTitle.textContent = "Bejelentkezés";
             authBtn.textContent = "Belépés";
             document.getElementById("toggle-auth").innerHTML = 'Nincs még fiókod? <span id="toggle-link">Regisztráció</span>';
-            authForm.reset(); // Kiürítjük a mezőket a biztonság kedvéért
+            authForm.reset();
             setupToggleListener();
         }
     } catch (err) {
-        alert("Adatbázis hiba történt a művelet során.");
-        console.error(err);
+        alert("Adatbázis hiba történt.");
     }
 });
-
 
 logoutBtn.addEventListener("click", function() {
     currentUser = null;
@@ -232,7 +224,6 @@ submitPostBtn.addEventListener("click", async function() {
     }
 });
 
-/* --- POSZTOK BETÖLTÉSE ÉS MEGJELENÍTÉSE MEGFELELŐ ELRENDEZÉSSEL --- */
 async function loadPosts() {
     feed.innerHTML = "<p>Bejegyzések betöltése...</p>";
     try {
@@ -240,7 +231,6 @@ async function loadPosts() {
         feed.innerHTML = "";
         
         if (res.data && res.data.length > 0) {
-            // Időrendben visszafele rendezzük (legfrissebb elöl)
             res.data.sort(function(a, b) { return b.id - a.id; });
 
             for (var i = 0; i < res.data.length; i++) {
@@ -250,7 +240,7 @@ async function loadPosts() {
                 var postDiv = document.createElement("div");
                 postDiv.className = "post";
                 
-                // Bejegyzés HTML struktúrája osztálynevekkel a CSS formázáshoz
+                // MÓDOSÍTÁS: Kivettük a szívecske gombot, csak a funkcionális elemek maradtak meg
                 postDiv.innerHTML = 
                     '<div class="post-header">' +
                         '<span class="post-user">@' + post.username + '</span>' +
@@ -258,9 +248,22 @@ async function loadPosts() {
                     '</div>' +
                     '<div class="post-text">' + post.content + '</div>' +
                     '<div class="post-actions">' +
-                        '<button onclick="likePost(' + post.id + ')">❤️ Kedvelem</button>' +
                         (post.username === currentUser ? '<button class="delete-btn" onclick="deletePost(' + post.id + ')">🗑️ Törlés</button>' : '') +
                     '</div>' +
                     '<div class="comment-section">' +
                         '<div class="comment-input-container">' +
-'' +'Küldés' +'' +'' +'';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések. Legyél te az első!";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function likePost(postId) {alert("Kedvelve! (Funkció teszt)");}async function loadComments(postId) {var listContainer = document.getElementById("comments-list-" + postId);if (!listContainer) return;try {var res = await supabase.from('comments').select('*', { eq: { post_id: postId } });listContainer.innerHTML = "";if (res.data && res.data.length > 0) {for (var i = 0; i < res.data.length; i++) {var c = res.data[i];var cDiv = document.createElement("div");cDiv.className = "comment";cDiv.innerHTML = '@' + c.username + ':' + c.content;listContainer.appendChild(cDiv);}}} catch (e) {console.log("Komment hiba");}}async function addComment(postId) {var input = document.getElementById("comment-in-" + postId);if (!input || !input.value.trim()) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: input.value.trim() }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a hozzászólás küldésekor.");}}// Indítás a lap betöltésekorinit();
+'' +'Küldés' +'' +'' +'/div>';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések.";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function loadComments(postId) {var listContainer = document.getElementById("comments-list-" + postId);if (!listContainer) return;try {var res = await supabase.from('comments').select('*', { eq: { post_id: postId } });listContainer.innerHTML = "";if (res.data && res.data.length > 0) {for (var i = 0; i < res.data.length; i++) {var c = res.data[i];var cDiv = document.createElement("div");cDiv.className = "comment";cDiv.innerHTML = '@' + c.username + ':' + c.content;listContainer.appendChild(cDiv);}}} catch (e) {console.log("Komment hiba");}}async function addComment(postId) {var input = document.getElementById("comment-in-" + postId);if (!input || !input.value.trim()) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: input.value.trim() }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a hozzászólás küldésekor.");}}init();*(Ne felejtsd el a zöld **Commit changes** gombot a mentéshez!)*
+
+### 2. A javított `style.css` fájl (Hozzászólás beviteli mező javítása)
+Hogy a komment beviteli mező tökéletesen látszódjon (fehér háttérrel és kerettel), nyisd meg a `style.css`-t is a ceruza ikonnal, görgess le az aljára, és ellenőrizd, hogy a `.comment-input-container input` szabály pontosan így néz-e ki (ha nem, írd át):
+
+```css
+.comment-input-container input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+    font-size: 14px;
+    background-color: #ffffff !important; /* Kényszerített fehér háttér */
+    color: #000000 !important;            /* Fekete beírt szöveg */
+}
