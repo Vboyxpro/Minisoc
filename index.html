@@ -16,6 +16,43 @@
           .then(function() { console.log("Minisoc PWA készen áll!"); })
           .catch(function(err) { console.log("PWA regisztrációs hiba:", err); });
       });
+        <script>
+  // Megvárjuk, amíg a HTML oldal teljesen betöltődik a háttérben
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    let elmentettPrompt;
+    const pwaGomb = document.getElementById('pwa-gomb');
+
+    // Ellenőrizzük, hogy létezik-e a gomb az oldalon, nehogy hibát dobjon
+    if (!pwaGomb) return;
+
+    // A böngésző jelzi, hogy az app telepíthető
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      elmentettPrompt = e;
+      pwaGomb.style.display = 'block';
+    });
+
+    // Amikor a felhasználó rákattint a gombra
+    pwaGomb.addEventListener('click', async () => {
+      if (elmentettPrompt) {
+        elmentettPrompt.prompt();
+        const { outcome } = await elmentettPrompt.userChoice;
+        console.log(`Felhasználó választása: ${outcome}`);
+        elmentettPrompt = null;
+        pwaGomb.style.display = 'none';
+      }
+    });
+
+    // Ha az appot már feltelepítették
+    window.addEventListener('appinstalled', () => {
+      pwaGomb.style.display = 'none';
+      console.log('A Minisoc sikeresen feltelepítve!');
+    });
+
+  });
+</script>
+
     }
   </script>
 
