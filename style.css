@@ -53,6 +53,8 @@ body {
     border: 1px solid #ced4da;
     border-radius: 6px;
     font-size: 16px;
+    background-color: #ffffff !important;
+    color: #000000 !important;
 }
 
 #toggle-auth {
@@ -85,12 +87,14 @@ body {
     resize: none;
     font-size: 16px;
     margin-bottom: 12px;
+    background-color: #ffffff !important;
+    color: #000000 !important;
 }
 
 /* Gombok alapstílusa */
 button {
     background-color: #1877f2;
-    color: white;
+    color: white !important;
     border: none;
     border-radius: 6px;
     padding: 10px 16px;
@@ -106,7 +110,7 @@ button:hover {
 
 .danger-btn {
     background-color: #e4e6eb;
-    color: #050505;
+    color: #050505 !important;
 }
 
 .danger-btn:hover {
@@ -117,7 +121,7 @@ button:hover {
     width: 100%;
 }
 
-/* BEJEGYZÉSEK (FEED) FORMÁZÁSA - Itt javítottuk az összecsúszást */
+/* BEJEGYZÉSEK (FEED) FORMÁZÁSA */
 .post {
     background: white;
     border-radius: 8px;
@@ -126,12 +130,11 @@ button:hover {
     margin-bottom: 16px;
 }
 
-/* A poszt fejléce: Felhasználónév és Dátum */
 .post-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Ha nem fér ki mobilon, tiszta új sorba töri */
+    flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 12px;
     border-bottom: 1px solid #f0f2f5;
@@ -148,15 +151,14 @@ button:hover {
     color: #65676b;
 }
 
-/* A poszt tényleges szövege */
 .post-text {
     font-size: 16px;
     line-height: 1.5;
     margin-bottom: 16px;
-    white-space: pre-wrap; /* Megtartja a sortöréseket */
+    white-space: pre-wrap;
+    color: #050505;
 }
 
-/* Interakciós sáv: Kedvelem, Törlés gombok */
 .post-actions {
     display: flex;
     gap: 12px;
@@ -168,7 +170,7 @@ button:hover {
 
 .post-actions button {
     background: none;
-    color: #65676b;
+    color: #65676b !important;
     padding: 6px 12px;
     font-size: 14px;
     border-radius: 4px;
@@ -176,58 +178,73 @@ button:hover {
 
 .post-actions button:hover {
     background-color: #f2f2f2;
-    color: #1877f2;
+    color: #1877f2 !important;
 }
 
-/* Külön stílus a törlés gombnak, ha pirosra szeretnéd */
 .post-actions .delete-btn:hover {
-    color: #e41e3f;
+    color: #e41e3f !important;
     background-color: #fbe7e9;
 }
 
-/* Komment szekció */
+/* JAVÍTOTT KOMMENT SZEKCIÓ - LÁTHATÓSÁGI GARANCIÁVAL */
 .comment-section {
-    background-color: #f8f9fa;
+    background-color: #f8f9fa !important;
     border-radius: 6px;
-    padding: 10px;
-    margin-top: 10px;
+    padding: 12px;
+    margin-top: 15px;
+    display: block !important; /* Garantálja, hogy ne bújjon el */
+    border: 1px solid #e4e6eb;
 }
 
 .comment-input-container {
     display: flex;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .comment-input-container input {
     flex: 1;
     padding: 8px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 20px; /* Modern, lekerekített beviteli mező */
+    border: 1px solid #ced4da !important;
+    border-radius: 20px;
     font-size: 14px;
+    background-color: #ffffff !important; /* Kényszerített fehér háttér inputnak */
+    color: #000000 !important;            /* Kényszerített fekete szöveg */
 }
 
 .comment-input-container button {
     padding: 6px 12px;
     font-size: 13px;
+    background-color: #e4e6eb;
+    color: #050505 !important;
+}
+
+.comment-input-container button:hover {
+    background-color: #d8dadf;
 }
 
 /* Egyedi kommentek listája */
 .comments-list {
-    display: flex;
+    display: flex !important; /* Garantáltan megjelenik */
     flex-direction: column;
     gap: 8px;
+    margin-top: 10px;
 }
 
+/* A konkrét megjelent hozzászólás buborék */
 .comment {
-    background: #f0f2f5;
+    background-color: #e4e6eb !important; /* Szürke háttér a szövegnek */
+    color: #050505 !important;            /* Sötétfekete szövegszín */
     padding: 8px 12px;
     border-radius: 12px;
     font-size: 14px;
     line-height: 1.4;
+    display: block !important;
+    text-align: left;
 }
 
 .comment-user {
     font-weight: bold;
+    color: #1877f2 !important; /* Kék színű felhasználónév a kommentben */
     margin-right: 6px;
 }
