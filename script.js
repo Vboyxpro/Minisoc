@@ -1,6 +1,5 @@
 const SUPABASE_URL = "https://sftfopnzbjfftcntoxkf.supabase.co"; 
 const SUPABASE_KEY = "sb_publishable_aFFtz1WWywHOqwO0pw9I8w_KY5PtTvE";
-
 const supabase = {
     async request(endpoint, method, options) {
         var url = SUPABASE_URL + "/rest/v1/" + endpoint;
@@ -223,6 +222,7 @@ submitPostBtn.addEventListener("click", async function() {
 });
 
 async function loadPosts() {
+    if (!feed) return;
     feed.innerHTML = "<p>Bejegyzések betöltése...</p>";
     try {
         var res = await supabase.from('posts').select('*');
@@ -237,6 +237,7 @@ async function loadPosts() {
                 
                 var postDiv = document.createElement("div");
                 postDiv.className = "post";
+                postDiv.id = "post-main-box-" + post.id;
                 
                 postDiv.innerHTML = 
                     '<div class="post-header">' +
@@ -251,36 +252,4 @@ async function loadPosts() {
                         '<div class="comment-input-container">' +
                             '<input type="text" id="comment-in-' + post.id + '" placeholder="Hozzászólás írása...">' +
                             '<button onclick="addComment(' + post.id + ')">Küldés</button>' +
-                        '</div>' +
-'' +'';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések.";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function loadComments(postId) {
-    var listContainer = document.getElementById("comments-list-" + postId);
-    try {
-        var res = await supabase.from('comments').select('*');
-        
-        if (res.data && res.data.length > 0) {
-            // TESZT: Ha talált kommentet az adatbázisban, feldobunk egy ablakot a tartalmával!
-            var elsoKomment = res.data[0];
-            alert("SIKER! Letöltve az adatbázisból: " + elsoKomment.content + " (Írta: " + elsoKomment.username + ")");
-            
-            if (!listContainer) {
-                console.error("HIBA: Nem található a HTML-ben a 'comments-list-" + postId + "' nevű elem!");
-                return;
-            }
-
-            listContainer.innerHTML = "";
-            for (var i = 0; i < res.data.length; i++) {
-                var c = res.data[i];
-                if (Number(c.post_id) === Number(postId) || Number(c.post_id) === 1 || !c.post_id) {
-                    var cDiv = document.createElement("div");
-                    cDiv.className = "comment";
-                    cDiv.innerHTML = '<span class="comment-user">@' + c.username + ':</span>' + c.content;
-                    listContainer.appendChild(cDiv);
-                }
-            }
-        } else {
-            console.log("Az adatbázis comments táblája teljesen üres.");
-        }
-    } catch (e) {
-        console.log("Komment hiba");
-    }
-}init();
+'' +'' +'';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések.";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function loadComments(postId) {var listContainer = document.getElementById("comments-list-" + postId);// BIZTONSÁGI JAVÍTÁS: Ha a HTML-ből valamiért hiányozna a doboz, manuálisan létrehozzuk a poszton belül!if (!listContainer) {var postBox = document.getElementById("post-main-box-" + postId);if (postBox) {var cSection = postBox.querySelector('.comment-section');if (cSection) {listContainer = document.createElement("div");listContainer.className = "comments-list";listContainer.id = "comments-list-" + postId;cSection.appendChild(listContainer);}}}if (!listContainer) return;try {var res = await supabase.from('comments').select('*');listContainer.innerHTML = "";if (res.data && res.data.length > 0) {for (var i = 0; i < res.data.length; i++) {var c = res.data[i];if (Number(c.post_id) === Number(postId) || Number(c.post_id) === 1) {var cDiv = document.createElement("div");cDiv.className = "comment";cDiv.innerHTML = '@' + c.username + ':' + c.content;listContainer.appendChild(cDiv);}}}} catch (e) {console.log("Komment kirajzolási hiba");}}async function addComment(postId) {var input = document.getElementById("comment-in-" + postId);if (!input || !input.value.trim()) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: input.value.trim() }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a hozzászólás küldésekor.");}}// Globálissá tesszük a függvényeket a gombok onclick eseményeihez, hogy a böngésző mindenképp lássa őket!window.addComment = addComment;window.deletePost = deletePost;init();
