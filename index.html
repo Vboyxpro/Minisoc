@@ -10,50 +10,49 @@
 
     <!-- PWA Funkciók -->
     <script>
-      // 1. Service Worker regisztráció javítva
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('sw.js')
-            .then(function() { console.log("Minisoc PWA készen áll!"); })
-            .catch(function(err) { console.log("PWA regisztrációs hiba:", err); });
-        }); // <-- Ez a lezárás hiányzott!
-      } // <-- Ez a lezárás is hiányzott!
-        
-      // 2. Telepítő gomb kezelése
-      document.addEventListener('DOMContentLoaded', () => {
-        let elmentettPrompt;
-        const pwaGomb = document.getElementById('pwa-gomb');
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('sw.js')
+        .then(function() { console.log("Minisoc PWA készen áll!"); })
+        .catch(function(err) { console.log("PWA regisztrációs hiba:", err); });
+    });
+  }
+    
+  document.addEventListener('DOMContentLoaded', () => {
+    let elmentettPrompt;
+    const pwaBanner = document.getElementById('pwa-banner');
+    const pwaGomb = document.getElementById('pwa-gomb');
 
-        if (!pwaGomb) return;
+    if (!pwaBanner || !pwaGomb) return;
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-          e.preventDefault();
-          elmentettPrompt = e;
-          pwaGomb.style.display = 'block';
-        });
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      elmentettPrompt = e;
+    });
 
-        pwaGomb.addEventListener('click', async () => {
-          if (elmentettPrompt) {
-            elmentettPrompt.prompt();
-            const { outcome } = await elmentettPrompt.userChoice;
-            console.log(`Felhasználó választása: ${outcome}`);
-            elmentettPrompt = null;
-            pwaGomb.style.display = 'none';
-          }
-        });
+    pwaGomb.addEventListener('click', async () => {
+      if (elmentettPrompt) {
+        elmentettPrompt.prompt();
+        const { outcome } = await elmentettPrompt.userChoice;
+        console.log(`Felhasználó választása: ${outcome}`);
+        elmentettPrompt = null;
+        pwaBanner.style.display = 'none';
+      } else {
+        alert("A telepítéshez kattints a böngésző címsorában található monitor ikonra, vagy a jobb felső hárompontos menüben az 'App telepítése' opcióra!");
+      }
+    });
 
-        window.addEventListener('appinstalled', () => {
-          pwaGomb.style.display = 'none';
-          console.log('A Minisoc sikeresen feltelepítve!');
-        });
-      });
-    </script>
+    window.addEventListener('appinstalled', () => {
+      pwaBanner.style.display = 'none';
+    });
+  });
+</script>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-   <!-- Mindig látható, alulra rögzített PWA Telepítési Banner -->
+   <!-- Fixen látható PWA Telepítési Banner bezáró gomb nélkül -->
 <div id="pwa-banner" style="position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(26, 26, 36, 0.95); backdrop-filter: blur(10px); box-shadow: 0 -4px 20px rgba(0,0,0,0.3); z-index: 9999; padding: 12px 20px; box-sizing: border-box; font-family: sans-serif;">
   <div style="display: flex; align-items: center; justify-content: space-between; max-width: 600px; margin: 0 auto; color: white;">
     
@@ -66,17 +65,16 @@
       </div>
     </div>
 
-    <!-- Jobb oldal: Akció gombok -->
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <button id="pwa-gomb" style="all: unset; background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+    <!-- Jobb oldal: Csak a Telepítés gomb -->
+    <div style="display: flex; align-items: center;">
+      <button id="pwa-gomb" style="all: unset; background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
         Telepítés
       </button>
-      <!-- Bezáró X gomb -->
-      <button id="pwa-bezar" style="all: unset; color: #888; font-size: 24px; cursor: pointer; padding: 0 5px; line-height: 1;">&times;</button>
     </div>
 
   </div>
 </div>
+
 
 
 
