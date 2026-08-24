@@ -1,4 +1,4 @@
-const SUPABASE_URL = "https://sftfopnzbjfftcntoxkf.supabase.co";
+const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "sb_publishable_aFFtz1WWywHOqwO0pw9I8w_KY5PtTvE";
 
 // Hagyományos hálózati kliens trükkös karakterek nélkül
@@ -217,45 +217,35 @@ submitPostBtn.addEventListener("click", async function() {
     }
 });
 
+/* --- POSZTOK BETÖLTÉSE ÉS MEGJELENÍTÉSE MEGFELELŐ ELRENDEZÉSSEL --- */
 async function loadPosts() {
     feed.innerHTML = "<p>Bejegyzések betöltése...</p>";
-
     try {
-        var resPosts = await supabase.from('posts').select('*');
-        var resLikes = await supabase.from('post_likes').select('*');
-        var posts = resPosts.data;
-        var allLikes = resLikes.data;
-        
-        if (!posts) {
-            feed.innerHTML = "<p style='text-align:center; color:#65676b;'>Nincs még bejegyzés.</p>";
-            return;
-        }
-
-        posts.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+        var res = await supabase.from('posts').select('*');
         feed.innerHTML = "";
+        
+        if (res.data && res.data.length > 0) {
+            // Időrendben visszafele rendezzük (legfrissebb elöl)
+            res.data.sort(function(a, b) { return b.id - a.id; });
 
-        if (posts.length === 0) {
-            feed.innerHTML = "<p style='text-align:center; color:#65676b;'>Nincs még bejegyzés.</p>";
-            return;
-        }
-
-        for (var i = 0; i < posts.length; i++) {
-            (function() {
-                var post = posts[i];
-                var postCard = document.createElement("div");
-                postCard.className = "card post-card";
-                var date = new Date(post.created_at).toLocaleString('hu-HU');
+            for (var i = 0; i < res.data.length; i++) {
+                var post = res.data[i];
+                var dateStr = post.created_at ? new Date(post.created_at).toLocaleString('hu-HU') : new Date().toLocaleString('hu-HU');
                 
-                var hasLiked = false;
-                if (allLikes) {
-                    for (var j = 0; j < allLikes.length; j++) {
-                        if (allLikes[j].post_id === post.id && allLikes[j].username === currentUser) {
-                            hasLiked = true;
-                            break;
-                        }
-                    }
-                }
-                var likeBtnText = hasLiked ? "❤️ Kedvelve" : "🤍 Kedvelem";
-
-                var isMyPost = (post.username === currentUser);
-var deleteBtnHtml = isMyPost ? 'Törlés' : '';var htmlContent = '';htmlContent += '';htmlContent += '@' + post.username + '';htmlContent += '';htmlContent += '' + date + '';htmlContent += deleteBtnHtml;htmlContent += '';htmlContent += '' + post.content + '';htmlContent += '';htmlContent += '';htmlContent += likeBtnText + ' (' + (post.likes || 0) + ')';htmlContent += '';htmlContent += '';htmlContent += 'Hozzászólások';htmlContent += 'Betöltés...';htmlContent += '';htmlContent += '';htmlContent += 'Küldés';htmlContent += '';postCard.innerHTML = htmlContent;feed.appendChild(postCard);var btnElement = document.getElementById("btn-" + post.id);if (btnElement) {btnElement.addEventListener('click', function() { window.sendComment(post.id); });}var likeElement = document.getElementById("like-" + post.id);if (likeElement) {likeElement.addEventListener('click', function() { window.toggleLike(post.id, post.likes || 0, hasLiked); });}if (isMyPost) {var delElement = document.getElementById("delete-" + post.id);if (delElement) {delElement.addEventListener('click', function() { window.deletePost(post.id); });}}loadComments(post.id);})();}} catch (err) {feed.innerHTML = "Hiba történt a hírfolyam betöltésekor.";}}window.toggleLike = async function(postId, currentLikes, hasLiked) {if (hasLiked) return;try {await supabase.from('post_likes').insert([{ post_id: postId, username: currentUser }]);await supabase.from('posts').update({ likes: currentLikes + 1 }, { eq: { id: postId } });loadPosts();} catch (err) {console.error(err);}};window.deletePost = async function(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a bejegyzést?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült a poszt törlése.");}};async function loadComments(postId) {var commentsList = document.getElementById("comments-" + postId);if (!commentsList) return;try {var res = await supabase.from('comments').select('*');var comments = res.data;if (!comments) {commentsList.innerHTML = "Nincs még hozzászólás.";return;}var filteredComments = comments.filter(function(c) { return c.post_id === postId; });filteredComments.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });commentsList.innerHTML = filteredComments.length === 0 ? "Nincs még hozzászólás." : "";filteredComments.forEach(function(comment) {var commentDiv = document.createElement("div");commentDiv.className = "comment-item";commentDiv.innerHTML = "@" + comment.username + ": " + comment.content;commentsList.appendChild(commentDiv);});} catch (err) {commentsList.innerHTML = "";}}window.sendComment = async function(postId) {var input = document.getElementById("input-" + postId);if (!input) return;var text = input.value.trim();if (!text) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: text }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a komment elküldésekor.");}};
+                var postDiv = document.createElement("div");
+                postDiv.className = "post";
+                
+                // Bejegyzés HTML struktúrája osztálynevekkel a CSS formázáshoz
+                postDiv.innerHTML = 
+                    '<div class="post-header">' +
+                        '<span class="post-user">@' + post.username + '</span>' +
+                        '<span class="post-date">' + dateStr + '</span>' +
+                    '</div>' +
+                    '<div class="post-text">' + post.content + '</div>' +
+                    '<div class="post-actions">' +
+                        '<button onclick="likePost(' + post.id + ')">❤️ Kedvelem</button>' +
+                        (post.username === currentUser ? '<button class="delete-btn" onclick="deletePost(' + post.id + ')">🗑️ Törlés</button>' : '') +
+                    '</div>' +
+                    '<div class="comment-section">' +
+                        '<div class="comment-input-container">' +
+'' +'Küldés' +'' +'' +'';feed.appendChild(postDiv);loadComments(post.id);}} else {feed.innerHTML = "Még nincsenek bejegyzések. Legyél te az első!";}} catch (err) {feed.innerHTML = "Nem sikerült betölteni a bejegyzéseket.";}}async function deletePost(postId) {if (!confirm("Biztosan törölni szeretnéd ezt a posztot?")) return;try {await supabase.from('posts').delete({ eq: { id: postId } });loadPosts();} catch (err) {alert("Nem sikerült törölni a posztot.");}}async function likePost(postId) {alert("Kedvelve! (Funkció teszt)");}async function loadComments(postId) {var listContainer = document.getElementById("comments-list-" + postId);if (!listContainer) return;try {var res = await supabase.from('comments').select('*', { eq: { post_id: postId } });listContainer.innerHTML = "";if (res.data && res.data.length > 0) {for (var i = 0; i < res.data.length; i++) {var c = res.data[i];var cDiv = document.createElement("div");cDiv.className = "comment";cDiv.innerHTML = '@' + c.username + ':' + c.content;listContainer.appendChild(cDiv);}}} catch (e) {console.log("Komment hiba");}}async function addComment(postId) {var input = document.getElementById("comment-in-" + postId);if (!input || !input.value.trim()) return;try {await supabase.from('comments').insert([{ post_id: postId, username: currentUser, content: input.value.trim() }]);input.value = "";loadComments(postId);} catch (err) {alert("Hiba a hozzászólás küldésekor.");}}// Indítás a lap betöltésekorinit();
