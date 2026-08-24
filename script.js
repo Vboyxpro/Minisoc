@@ -147,9 +147,14 @@ authForm.addEventListener("submit", async function(e) {
     e.preventDefault();
     var username = document.getElementById("username").value.trim();
     var password = document.getElementById("password").value;
+    
+    // Kimásoljuk az iskolai kód mező értékét is
+    var schoolCodeInput = document.getElementById("school-code");
+    var schoolCode = schoolCodeInput ? schoolCodeInput.value.trim() : "";
 
     try {
         if (isLoginMode) {
+            // BEJELENTKEZÉS (Itt nem kérünk kódot)
             var res = await supabase.from('users').select('*');
             var user = null;
             if (res.data) {
@@ -170,6 +175,13 @@ authForm.addEventListener("submit", async function(e) {
                 alert("Hibás felhasználónév vagy jelszó!");
             }
         } else {
+            // REGISZTRÁCIÓ (Itt ellenőrizzük a titkos kódot!)
+            // 👉 ITT MÓDOSÍTHATOD A TITKOS KÓDOT (Most: Suli2026)
+            if (schoolCode !== "Suli2026") {
+                alert("Hibás iskolai kód! Csak a suli diákjai regisztrálhatnak.");
+                return;
+            }
+
             var resEx = await supabase.from('users').select('*');
             var exists = false;
             if (resEx.data) {
@@ -201,6 +213,7 @@ authForm.addEventListener("submit", async function(e) {
         alert("Adatbázis hiba történt.");
     }
 });
+
 
 logoutBtn.addEventListener("click", function() {
     currentUser = null;
